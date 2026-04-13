@@ -47,9 +47,7 @@ sessions: dict[str, list[dict]] = {}
 
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
-# Serve static frontend files
-if FRONTEND_DIR.exists():
-    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+# We will mount StaticFiles after the API routes below.
 
 
 # ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -66,13 +64,7 @@ class ChatResponse(BaseModel):
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
 
-@app.get("/", response_class=HTMLResponse)
-async def serve_frontend():
-    """Serve the main chat UI."""
-    index_path = FRONTEND_DIR / "index.html"
-    if index_path.exists():
-        return HTMLResponse(content=index_path.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>CareerCompass API is running. Frontend not found.</h1>")
+
 
 
 @app.get("/health")
@@ -211,3 +203,8 @@ async def list_sessions():
             for sid, msgs in sessions.items()
         ]
     }
+
+# ─── Static Files (Fallback) ──────────────────────────────────────────────────
+
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
