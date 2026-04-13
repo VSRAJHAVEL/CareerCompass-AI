@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerCompass — AI Job Guidance Chatbot</title>
+  <meta name="description" content="AI-powered career counselor. Get guidance on resumes, interviews, career paths, salary, and skills — powered by Ollama." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- ── Sidebar ─────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-text">
+            <span class="logo-name">CareerCompass</span>
+            <span class="logo-sub">AI Job Guidance</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="new-chat-btn" id="newChatBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Conversation
+      </button>
+
+      <!-- Quick Actions -->
+      <div class="sidebar-section">
+        <div class="section-label">Quick Guidance</div>
+        <div class="quick-actions">
+          <button class="quick-action-btn" data-prompt="Help me write a strong resume for a software engineering role." id="qaResume">
+            <div class="qa-text">
+              <span class="qa-title">Resume Help</span>
+              <span class="qa-sub">Format, ATS tips & more</span>
+            </div>
+          </button>
+          <button class="quick-action-btn" data-prompt="Help me prepare for a technical and HR job interview." id="qaInterview">
+            <div class="qa-text">
+              <span class="qa-title">Interview Prep</span>
+              <span class="qa-sub">Mock Q&A & STAR method</span>
+            </div>
+          </button>
+          <button class="quick-action-btn" data-prompt="What is the salary range for a data scientist in India and US?" id="qaSalary">
+            <div class="qa-text">
+              <span class="qa-title">Salary Insights</span>
+              <span class="qa-sub">Benchmarks & negotiation</span>
+            </div>
+          </button>
+          <button class="quick-action-btn" data-prompt="I want to become a machine learning engineer. What skills do I need and how should I learn them?" id="qaSkills">
+            <div class="qa-text">
+              <span class="qa-title">Skill Gap Analysis</span>
+              <span class="qa-sub">What to learn & where</span>
+            </div>
+          </button>
+          <button class="quick-action-btn" data-prompt="I am a fresh graduate in computer science. What career paths should I consider?" id="qaCareer">
+            <div class="qa-text">
+              <span class="qa-title">Career Path</span>
+              <span class="qa-sub">Roles & growth trajectories</span>
+            </div>
+          </button>
+          <button class="quick-action-btn" data-prompt="Help me write a cover letter for a product manager position." id="qaCover">
+            <div class="qa-text">
+              <span class="qa-title">Cover Letter</span>
+              <span class="qa-sub">Craft a compelling letter</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Model Status -->
+      <div class="sidebar-footer">
+        <div class="model-badge" id="modelBadge">
+          <div class="model-dot" id="modelDot"></div>
+          <div class="model-info">
+            <span class="model-name">qwen3-vl:8b</span>
+            <span class="model-status" id="modelStatus">Checking...</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main Chat Area ──────────────────────────────── -->
+    <main class="chat-main">
+      <!-- Header -->
+      <header class="chat-header">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="header-info">
+          <h1 class="header-title">Job Guidance Chat</h1>
+          <span class="header-sub" id="headerSub">Ask me anything about your career</span>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" id="clearChatBtn" title="Clear conversation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages -->
+      <div class="messages-container" id="messagesContainer">
+        <!-- Welcome state -->
+        <div class="welcome-state" id="welcomeState">
+          <h2 class="welcome-title">Your AI Career Counselor</h2>
+          <p class="welcome-desc">
+            Get personalized guidance on resumes, interviews, career paths, salaries, and skill development. 
+            Powered by <strong>Qwen3-VL</strong> running locally via Ollama.
+          </p>
+          <div class="welcome-chips">
+            <button class="chip" data-prompt="What are the top in-demand tech jobs in 2025?" id="chip1">Top Tech Jobs 2025</button>
+            <button class="chip" data-prompt="How do I switch from IT to data science?" id="chip2">Switch to Data Science</button>
+            <button class="chip" data-prompt="What skills should a fresher learn to get a job faster?" id="chip3">Fresher Skill Roadmap</button>
+            <button class="chip" data-prompt="How do I negotiate my salary during a job offer?" id="chip4">Salary Negotiation</button>
+          </div>
+        </div>
+
+        <!-- Chat messages will be injected here -->
+        <div class="messages-list" id="messagesList"></div>
+      </div>
+
+      <!-- NLP Analysis Badge (shows detected intent) -->
+      <div class="nlp-badge-container" id="nlpBadge" style="display:none;">
+        <div class="nlp-badge">
+          <span class="nlp-label">🔍 Detected:</span>
+          <span class="nlp-tags" id="nlpTags"></span>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area">
+        <div class="resume-upload-badge" id="resumeBadge" style="display:none;">
+          <span class="resume-label">Attached:</span>
+          <span class="resume-name" id="resumeName">resume.pdf</span>
+          <button class="resume-clear" id="resumeClear" title="Remove attachment">×</button>
+        </div>
+        <div class="input-wrapper">
+          <label for="resumeUpload" class="upload-btn" title="Upload Resume (.txt)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <input type="file" id="resumeUpload" accept=".pdf" style="display: none;" />
+          </label>
+          <textarea
+            id="messageInput"
+            class="message-input"
+            placeholder="Ask about your career, resume, interview, salary..."
+            rows="1"
+            maxlength="2000"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+        <div class="input-footer">
+          <span class="char-count" id="charCount">0 / 2000</span>
+          <span class="powered-by">Powered by Ollama · qwen3-vl:8b | Developed by Rajhavel V S</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
